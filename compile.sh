@@ -1,0 +1,1 @@
+gcc bch.c -c
