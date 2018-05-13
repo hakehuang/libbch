@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 #include "bchlib.h"
 
 static unsigned int find_m(unsigned int data_len, unsigned int ecc_cap)
@@ -62,8 +63,15 @@ void bchlib_encode(struct bchlib *bchlib, const uint8_t *data, uint8_t *ecc)
 
 int bchlib_decode(struct bchlib *bchlib, const uint8_t *data, uint8_t *ecc)
 {
-	return decode_bch(bchlib->bch_ctrl, data, bchlib->data_len, ecc, NULL,
-			  NULL, bchlib->errloc);
+	int errcnt = decode_bch(bchlib->bch_ctrl, data, bchlib->data_len, ecc,
+				NULL, NULL, bchlib->errloc);
+
+	if (errcnt >= 0)
+		bchlib->error_count = errcnt;
+	else if (errcnt == -EBADMSG)
+		bchlib->error_count = bchlib->ecc_cap + 1;
+
+	return errcnt;
 }
 
 void bchlib_correct_all(struct bchlib *bchlib, uint8_t *data, uint8_t *ecc)
@@ -71,7 +79,7 @@ void bchlib_correct_all(struct bchlib *bchlib, uint8_t *data, uint8_t *ecc)
 	int i;
 	unsigned int *errloc = bchlib->errloc;
 
-	for (i = 0; i < bchlib->ecc_cap; i++) {
+	for (i = 0; i < bchlib->error_count; i++) {
 		unsigned int err_byte = errloc[i] / 8;
 
 		if (err_byte < bchlib->data_len) {
@@ -99,7 +107,7 @@ void bchlib_dump_errloc(struct bchlib *bchlib)
 	unsigned int errloc_byte;
 
 	printf("bchlib errloc:\n  ");
-	for (i = 0; i < bchlib->ecc_cap; i++) {
+	for (i = 0; i < bchlib->error_count; i++) {
 		errloc_byte = bchlib->errloc[i] / 8;
 		if (errloc_byte < bchlib->data_len) {
 			printf("%u ", errloc_byte);

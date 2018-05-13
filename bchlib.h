@@ -9,6 +9,7 @@ struct bchlib
 	unsigned int data_len;
 	unsigned int ecc_len;
 	unsigned int ecc_cap;
+	unsigned int error_count;
 
 	/* private */
 	struct bch_control *bch_ctrl;
