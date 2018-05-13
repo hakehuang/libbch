@@ -28,4 +28,6 @@ void bchlib_correct_all(struct bchlib *bchlib, uint8_t *data, uint8_t *ecc);
 
 void bchlib_dump(struct bchlib *bchlib);
 
+void bchlib_dump_errloc(struct bchlib *bchlib);
+
 #endif /* _BCHLIB_H_ */

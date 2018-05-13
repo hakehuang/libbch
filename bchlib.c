@@ -8,7 +8,7 @@ static unsigned int find_m(unsigned int data_len, unsigned int ecc_cap)
 	unsigned int data_bits = data_len * 8;
 
 	for (m = 5; m <= 15; m++) {
-		if(data_bits + (m * ecc_cap) <= (2 << m) - 1)
+		if(data_bits + (m * ecc_cap) <= (2 << (m - 1)) - 1)
 			return m;
 	}
 
@@ -94,3 +94,11 @@ void bchlib_dump(struct bchlib *bchlib)
 	printf("  ecc_cap = %u\n", bchlib->ecc_cap);
 }
 
+void bchlib_dump_errloc(struct bchlib *bchlib)
+{
+	int i;
+
+	for (i = 0; i < bchlib->ecc_cap; i++)
+		printf("%u ", bchlib->errloc[i]);
+	printf("\n");
+}
