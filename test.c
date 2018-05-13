@@ -18,6 +18,16 @@ void dump_data(uint8_t *data, unsigned int len)
 	printf("\n");
 }
 
+void parse_bch_decode_err(int err_code)
+{
+	if (err_code == -EBADMSG)
+		printf("bchlib decode failed: %d\n", err_code);
+	else if (err_code == -EINVAL)
+		printf("bhclib decode invalid parameters: %d\n", err_code);
+	else
+		printf("bhclib decode unknown error: %d\n", err_code);
+}
+
 int main(int argc, const char *argv[])
 {
 	struct bchlib *bchlib;
@@ -39,39 +49,28 @@ int main(int argc, const char *argv[])
 	//dump_data(data, bchlib->data_len);
 	//dump_data(ecc, bchlib->ecc_len);
 
-	data[0] = 0;
-	errcnt = bchlib_decode(bchlib, data, ecc);
+	data[0] = 0xF0;
+	ecc[0] = ecc[0] ^ 0xF0;
 
-	if(errcnt >= 0) {
-		printf("bchlib_decode errcnt = %d\n", errcnt);
-		if (errcnt > 0)
-			bchlib_dump_errloc(bchlib);
-	} else {
-		if (errcnt == -EBADMSG)
-			printf("bchlib decode failed: %d\n", errcnt);
-		else if (errcnt == -EINVAL)
-			printf("bhclib invalid parameters: %d\n", errcnt);
-		else
-			printf("bhclib decode error: %d\n", errcnt);
+	errcnt = bchlib_decode(bchlib, data, ecc);
+	if (errcnt > 0) {
+		bchlib_dump_errloc(bchlib);
+	} else if (errcnt < 0) {
+		parse_bch_decode_err(errcnt);
+		goto has_errors;
 	}
 
 	bchlib_correct_all(bchlib, data, ecc);
 
 	errcnt = bchlib_decode(bchlib, data, ecc);
-	if(errcnt >= 0) {
-		printf("bchlib_decode errcnt = %d\n", errcnt);
-		if (errcnt > 0)
-			bchlib_dump_errloc(bchlib);
-	} else {
-		if (errcnt == -EBADMSG)
-			printf("bchlib decode failed: %d\n", errcnt);
-		else if (errcnt == -EINVAL)
-			printf("bhclib invalid parameters: %d\n", errcnt);
-		else
-			printf("bhclib decode error: %d\n", errcnt);
+	if (errcnt > 0) {
+		bchlib_dump_errloc(bchlib);
+	} else if (errcnt < 0) {
+		parse_bch_decode_err(errcnt);
+		goto has_errors;
 	}
 
+has_errors:
 	bchlib_free(bchlib);
-
 	return 0;
 }
