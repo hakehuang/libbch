@@ -38,7 +38,6 @@ struct bchlib* bchlib_init(unsigned int data_len, unsigned int ecc_cap)
 	}
 
 	m = find_m(data_len, ecc_cap);
-	printf("Found m = %u\n", m);
 
 	/* init bchlib and bch_control */
 	bchlib = (struct bchlib*)malloc(sizeof(*bchlib));
@@ -97,8 +96,17 @@ void bchlib_dump(struct bchlib *bchlib)
 void bchlib_dump_errloc(struct bchlib *bchlib)
 {
 	int i;
+	unsigned int errloc_byte;
 
-	for (i = 0; i < bchlib->ecc_cap; i++)
-		printf("%u ", bchlib->errloc[i]);
+	printf("bchlib errloc:\n  ");
+	for (i = 0; i < bchlib->ecc_cap; i++) {
+		errloc_byte = bchlib->errloc[i] / 8;
+		if (errloc_byte < bchlib->data_len) {
+			printf("%u ", errloc_byte);
+		} else {
+			printf("%u+%u ", bchlib->data_len,
+					 errloc_byte - bchlib->data_len);
+		}
+	}
 	printf("\n");
 }
