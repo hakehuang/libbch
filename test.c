@@ -121,7 +121,7 @@ int libbch_verify_random(void)
 	uint8_t *ecc_golden;
 	int errcnt;
 
-	libbch = libbch_init(512, 8);
+	libbch = libbch_init(64, 8);
 	libbch_dump(libbch);
 	data = malloc(libbch->data_len);
 	ecc = malloc(libbch->ecc_len);
