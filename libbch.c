@@ -39,6 +39,7 @@ struct libbch* libbch_init(unsigned int data_len, unsigned int ecc_cap)
 	}
 
 	m = find_m(data_len, ecc_cap);
+	printf("m should be %u\n", m);
 
 	/* init libbch and bch_control */
 	libbch = (struct libbch*)malloc(sizeof(*libbch));
