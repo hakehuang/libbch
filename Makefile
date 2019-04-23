@@ -12,10 +12,11 @@ TARGET=../lib/libbch.so
 all: $(TARGET)
 
 clean:
-	rm -f $(OBJECTS) $(TARGET)
+	rm -f $(OBJECTS)
 	-rm -f test
 
 $(TARGET) : $(OBJECTS)
+	-mkdir ../lib
 	$(CC) $(CFLAGS) $(OBJECTS) -o $@ $(LDFLAGS)
 
 test: test.c $(OBJECTS)

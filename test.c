@@ -173,8 +173,8 @@ has_errors:
 int main(int argc, const char *argv[])
 {
 	srand(time(NULL));
-	//simple_test();
-	libbch_verify_random();
+	simple_test();
+	//libbch_verify_random();
 
 	return 0;
 }

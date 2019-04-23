@@ -1006,6 +1006,28 @@ int decode_bch(struct bch_control *bch, const uint8_t *data, unsigned int len,
 	/* sanity check: make sure data length can be handled */
 	if (8*len > (bch->n-bch->ecc_bits))
 		return -EINVAL;
+#if 0
+	printf("bch->m is %d \n", bch->m);
+	printf("bch->n is %d \n", bch->n);
+	printf("bch->t is %d \n", bch->t);
+	printf("bch->ecc_bits is %d \n", bch->ecc_bits);
+	printf("bch->ecc_bytes is %d \n", bch->ecc_bytes);
+	printf("len is %d \n", len);
+	for(i=0; i < len; i++)
+	{
+		printf("data[%d] = %d\t", i, data[i]);
+		if (i%10 == 0 && i != 0)
+			printf("\n\r");
+	}
+	printf("\r\n================================\r\n");
+	for(i=0; i < bch->ecc_bytes; i++)
+	{
+		printf("recv_ecc[%d] = %d\t", i, recv_ecc[i]);
+		if (i%5 == 0 && i != 0)
+			printf("\n\r");
+	}
+	printf("\r\n================================\r\n");
+#endif
 
 	/* if caller does not provide syndromes, compute them */
 	if (!syn) {
